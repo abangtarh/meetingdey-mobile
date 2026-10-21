@@ -1,0 +1,25 @@
+{
+  "edition": "mtn",
+  "appId": "com.setl.meetingdey.mtn",
+  "appName": "MeetingDey MTN",
+  "urlScheme": "meetingdeymtn",
+  "serverUrl": "https://app.meetingdey.com",
+  "allowNavigation": [
+    "app.meetingdey.com",
+    "*.meetingdey.com"
+  ],
+  "colors": {
+    "primary": "#1A1A1A",
+    "accent": "#FFCB05",
+    "splashBackground": "#FFCB05",
+    "statusBar": "#FFCB05"
+  },
+  "statusBarStyle": "LIGHT",
+  "iconText": "MD",
+  "iconLabel": "PLACEHOLDER",
+  "_todo": [
+    "appName: confirm final store name with MTN",
+    "serverUrl: switch to the MTN-facing host once the backend edition layer is live",
+    "colors + assets/mtn/*.png: replace with MTN's official brand pack"
+  ]
+}

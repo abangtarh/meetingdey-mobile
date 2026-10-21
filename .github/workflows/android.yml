@@ -1,0 +1,111 @@
+name: Android build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      edition:
+        description: Edition to build
+        type: choice
+        options: [both, meetingdey, mtn]
+        default: both
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        edition: [meetingdey, mtn]
+    steps:
+      - name: Skip editions not requested
+        id: gate
+        run: |
+          want="${{ github.event.inputs.edition || 'both' }}"
+          if [ "$want" = "both" ] || [ "$want" = "${{ matrix.edition }}" ]; then echo "run=true" >> "$GITHUB_OUTPUT"; else echo "run=false" >> "$GITHUB_OUTPUT"; fi
+
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.run == 'true'
+
+      - uses: actions/setup-node@v4
+        if: steps.gate.outputs.run == 'true'
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        if: steps.gate.outputs.run == 'true'
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - name: Install
+        if: steps.gate.outputs.run == 'true'
+        run: npm ci
+
+      - name: Apply edition and sync
+        if: steps.gate.outputs.run == 'true'
+        env:
+          EDITION: ${{ matrix.edition }}
+        run: |
+          node scripts/apply-edition.mjs "$EDITION"
+          npx cap sync android
+          node scripts/check.mjs "$EDITION"
+
+      - name: Version
+        if: steps.gate.outputs.run == 'true'
+        id: ver
+        run: |
+          echo "name=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+          echo "code=${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+
+      - name: Restore release keystore
+        if: steps.gate.outputs.run == 'true' && github.event_name != 'pull_request'
+        id: ks
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+            echo "path=$RUNNER_TEMP/release.jks" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build APKs
+        if: steps.gate.outputs.run == 'true'
+        working-directory: android
+        env:
+          VERSION_CODE: ${{ steps.ver.outputs.code }}
+          VERSION_NAME: ${{ steps.ver.outputs.name }}
+          ANDROID_KEYSTORE_PATH: ${{ steps.ks.outputs.path }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleDebug
+          if [ -n "$ANDROID_KEYSTORE_PATH" ]; then ./gradlew --no-daemon assembleRelease bundleRelease; fi
+
+      - name: Collect outputs
+        if: steps.gate.outputs.run == 'true'
+        run: |
+          mkdir -p out
+          base="MeetingDey-${{ matrix.edition }}-${{ steps.ver.outputs.name }}-${{ steps.ver.outputs.code }}"
+          cp android/app/build/outputs/apk/debug/app-debug.apk "out/$base-debug.apk"
+          [ -f android/app/build/outputs/apk/release/app-release.apk ] && cp android/app/build/outputs/apk/release/app-release.apk "out/$base-release.apk" || true
+          [ -f android/app/build/outputs/bundle/release/app-release.aab ] && cp android/app/build/outputs/bundle/release/app-release.aab "out/$base-release.aab" || true
+          ls -la out
+
+      - uses: actions/upload-artifact@v4
+        if: steps.gate.outputs.run == 'true'
+        with:
+          name: android-${{ matrix.edition }}-${{ steps.ver.outputs.name }}-${{ steps.ver.outputs.code }}
+          path: out/*
+          retention-days: 30

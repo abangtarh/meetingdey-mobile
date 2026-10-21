@@ -1,0 +1,20 @@
+{
+  "edition": "meetingdey",
+  "appId": "com.setl.meetingdey",
+  "appName": "MeetingDey",
+  "urlScheme": "meetingdey",
+  "serverUrl": "https://app.meetingdey.com",
+  "allowNavigation": [
+    "app.meetingdey.com",
+    "*.meetingdey.com"
+  ],
+  "colors": {
+    "primary": "#0B2545",
+    "accent": "#C9A227",
+    "splashBackground": "#0B2545",
+    "statusBar": "#0B2545"
+  },
+  "statusBarStyle": "DARK",
+  "iconText": "MD",
+  "iconLabel": null
+}

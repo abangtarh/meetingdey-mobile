@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">MeetingDey</string>
+    <string name="title_activity_main">MeetingDey</string>
+    <string name="package_name">com.setl.meetingdey</string>
+    <string name="custom_url_scheme">meetingdey</string>
+</resources>

@@ -1,0 +1,34 @@
+{
+  "name": "meetingdey-mobile",
+  "version": "0.1.0",
+  "description": "MeetingDey Android & iOS apps (Capacitor shell) — MeetingDey and MTN editions",
+  "scripts": {
+    "edition:meetingdey": "node scripts/apply-edition.mjs meetingdey && EDITION=meetingdey cap sync",
+    "edition:mtn": "node scripts/apply-edition.mjs mtn && EDITION=mtn cap sync",
+    "sync": "cap sync",
+    "android:open": "cap open android",
+    "ios:open": "cap open ios",
+    "apk:debug": "cd android && ./gradlew assembleDebug",
+    "check": "node scripts/check.mjs"
+  },
+  "author": "Sure Engineering & Technologies Ltd",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/camera": "^8.2.6",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/ios": "^8.5.3",
+    "@capacitor/network": "^8.0.1",
+    "@capacitor/preferences": "^8.0.1",
+    "@capacitor/push-notifications": "^8.1.3",
+    "@capacitor/splash-screen": "^8.0.2",
+    "@capacitor/status-bar": "^8.0.4",
+    "@capgo/capacitor-native-biometric": "^8.9.1"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.5.3"
+  },
+  "private": true
+}

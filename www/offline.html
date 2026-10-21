@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MeetingDey — offline</title>
+<style>
+  :root { --bg:#0B2545; --fg:#ffffff; --accent:#C9A227; --muted:rgba(255,255,255,.72); }
+  * { box-sizing:border-box; }
+  html,body { margin:0; height:100%; }
+  body { background:var(--bg); color:var(--fg); font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+         display:flex; align-items:center; justify-content:center; padding:24px;
+         padding-top:max(24px, env(safe-area-inset-top)); }
+  main { max-width:360px; width:100%; text-align:center; }
+  .mark { width:72px; height:72px; border-radius:18px; margin:0 auto 20px; background:var(--accent);
+          color:var(--bg); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:28px; }
+  h1 { font-size:20px; margin:0 0 6px; }
+  p { margin:0 0 4px; color:var(--muted); }
+  .fr { margin-top:14px; }
+  button { margin-top:28px; width:100%; padding:14px; border:0; border-radius:12px; background:var(--accent);
+           color:var(--bg); font-size:16px; font-weight:700; }
+  button:disabled { opacity:.6; }
+  #status { min-height:1.5em; margin-top:12px; font-size:14px; }
+</style>
+</head>
+<body>
+<main>
+  <div class="mark" id="mark">MD</div>
+  <h1 id="title">You're offline</h1>
+  <p>We can't reach MeetingDey right now. Check your data or Wi-Fi and try again.</p>
+  <p class="fr">Vous êtes hors ligne. Impossible de joindre MeetingDey. Vérifiez votre connexion et réessayez.</p>
+  <button id="retry">Try again · Réessayer</button>
+  <div id="status" aria-live="polite"></div>
+</main>
+<script>
+(function () {
+  var cfg = { serverUrl: 'https://app.meetingdey.com', colors: null, appName: 'MeetingDey' };
+  var btn = document.getElementById('retry');
+  var status = document.getElementById('status');
+
+  function applyTheme(c) {
+    if (!c) return;
+    var r = document.documentElement.style;
+    r.setProperty('--bg', c.splashBackground || c.primary);
+    r.setProperty('--accent', c.primary === '#1A1A1A' ? '#1A1A1A' : c.accent);
+    if (c.primary === '#1A1A1A') { r.setProperty('--fg', '#1A1A1A'); r.setProperty('--muted', 'rgba(0,0,0,.7)'); }
+  }
+
+  fetch('edition.json').then(function (r) { return r.json(); }).then(function (e) {
+    cfg = e; applyTheme(e.colors);
+    if (e.edition === 'mtn') { document.getElementById('mark').style.color = '#FFCB05'; }
+  }).catch(function () {});
+
+  function goBack() {
+    // Navigating the WebView back to the server reloads the app if it is reachable.
+    window.location.replace(cfg.serverUrl);
+  }
+
+  btn.addEventListener('click', function () {
+    btn.disabled = true; status.textContent = 'Checking… / Vérification…';
+    // no-cors HEAD: any response at all means the server is reachable.
+    fetch(cfg.serverUrl + '/', { method: 'HEAD', mode: 'no-cors', cache: 'no-store' })
+      .then(goBack)
+      .catch(function () {
+        btn.disabled = false;
+        status.textContent = 'Still offline. / Toujours hors ligne.';
+      });
+  });
+
+  // Come back on its own as soon as the device reconnects.
+  window.addEventListener('online', goBack);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+node_modules/
+.DS_Store
+*.log
+.env
+*.jks
+!android/app/debug.keystore
+build/
+out/

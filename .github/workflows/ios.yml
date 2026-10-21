@@ -1,0 +1,87 @@
+name: iOS build
+
+# Compiles the iOS app for the simulator on every push, so iOS breakage shows up
+# early without needing a Mac. Signed builds for TestFlight are added once the
+# Apple Developer account exists (see README "iOS signing and TestFlight").
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      edition:
+        description: Edition to build
+        type: choice
+        options: [both, meetingdey, mtn]
+        default: both
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        edition: [meetingdey, mtn]
+    steps:
+      - name: Skip editions not requested
+        id: gate
+        run: |
+          want="${{ github.event.inputs.edition || 'both' }}"
+          if [ "$want" = "both" ] || [ "$want" = "${{ matrix.edition }}" ]; then echo "run=true" >> "$GITHUB_OUTPUT"; else echo "run=false" >> "$GITHUB_OUTPUT"; fi
+
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.run == 'true'
+
+      - uses: actions/setup-node@v4
+        if: steps.gate.outputs.run == 'true'
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        if: steps.gate.outputs.run == 'true'
+        run: npm ci
+
+      - name: Apply edition and sync
+        if: steps.gate.outputs.run == 'true'
+        env:
+          EDITION: ${{ matrix.edition }}
+        run: |
+          node scripts/apply-edition.mjs "$EDITION"
+          npx cap sync ios
+          node scripts/check.mjs "$EDITION"
+
+      - name: Build for simulator (unsigned)
+        if: steps.gate.outputs.run == 'true'
+        run: |
+          set -o pipefail
+          xcodebuild -version
+          xcodebuild \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            build | tail -40
+          test -d build/Build/Products/Debug-iphonesimulator/App.app
+
+      - name: Package simulator app
+        if: steps.gate.outputs.run == 'true'
+        run: |
+          cd build/Build/Products/Debug-iphonesimulator
+          zip -qry "$GITHUB_WORKSPACE/MeetingDey-${{ matrix.edition }}-simulator.app.zip" App.app
+
+      - uses: actions/upload-artifact@v4
+        if: steps.gate.outputs.run == 'true'
+        with:
+          name: ios-simulator-${{ matrix.edition }}-${{ github.run_number }}
+          path: MeetingDey-${{ matrix.edition }}-simulator.app.zip
+          retention-days: 14
