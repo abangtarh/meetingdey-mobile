@@ -4,8 +4,8 @@ Android and iOS apps for MeetingDey, built with [Capacitor](https://capacitorjs.
 
 | Edition | App id | Name | URL scheme |
 |---|---|---|---|
-| `meetingdey` | `com.setl.meetingdey` | MeetingDey | `meetingdey://` |
-| `mtn` | `com.setl.meetingdey.mtn` | MeetingDey MTN *(name to confirm)* | `meetingdeymtn://` |
+| `meetingdey` | `com.meetingdey.app` | MeetingDey | `meetingdey://` |
+| `mtn` | `com.meetingdey.app.mtn` | MeetingDey MTN *(name to confirm)* | `meetingdeymtn://` |
 
 Both can be installed side by side on the same phone.
 
@@ -23,8 +23,12 @@ Both can be installed side by side on the same phone.
 ```
 
 - The app loads the live site, so **web fixes reach the apps without a store release**. A new app build is only needed for native changes (plugins, icons, permissions, ids).
-- `web-bridge/meetingdey-native.js` belongs on the **server**: copy it into the backend's static JS and include it on every page. In a normal browser it does nothing; inside the app it exposes `window.MeetingDeyNative` (push registration, camera, biometric app lock, deep-link and network events). The header of the file documents the API.
+- `web-bridge/meetingdey-native.js` belongs on the **server**. The backend serves it as `/meetingdey-native.js` and the app shell loads it (from release rev-187-m1); keep the two copies identical. In a normal browser it does nothing; inside the app it exposes `window.MeetingDeyNative` (push registration, camera, biometric app lock, deep-link and network events). The header of the file documents the API.
 - Existing `<input type="file">` uploads (KYC documents, receipts) already work in the app with camera and gallery. No changes are needed for those.
+
+## What the app looks like
+
+The phone layout (bottom tabs: Home · Pay · My money · Meetings · More for members; Home · Approvals · Members · Meetings · More for officers) lives in the backend as `public/mobile-ui.js`, so it also applies to phone browsers. The MTN look (name, colours, yellow top bar, logo) is the **MTN edition** in the console's Branding tab: the server recognises the MTN app by its User-Agent and serves the edition's branding. Nothing about the look needs an app rebuild.
 
 ## Editions
 

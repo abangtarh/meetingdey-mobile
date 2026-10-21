@@ -1,6 +1,6 @@
 {
   "edition": "mtn",
-  "appId": "com.setl.meetingdey.mtn",
+  "appId": "com.meetingdey.app.mtn",
   "appName": "MeetingDey MTN",
   "urlScheme": "meetingdeymtn",
   "serverUrl": "https://app.meetingdey.com",

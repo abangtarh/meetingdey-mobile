@@ -1,6 +1,6 @@
 {
   "edition": "meetingdey",
-  "appId": "com.setl.meetingdey",
+  "appId": "com.meetingdey.app",
   "appName": "MeetingDey",
   "urlScheme": "meetingdey",
   "serverUrl": "https://app.meetingdey.com",
@@ -9,10 +9,10 @@
     "*.meetingdey.com"
   ],
   "colors": {
-    "primary": "#0B2545",
-    "accent": "#C9A227",
-    "splashBackground": "#0B2545",
-    "statusBar": "#0B2545"
+    "primary": "#003366",
+    "accent": "#C9A84C",
+    "splashBackground": "#0a1f3c",
+    "statusBar": "#0a1f3c"
   },
   "statusBarStyle": "DARK",
   "iconText": "MD",

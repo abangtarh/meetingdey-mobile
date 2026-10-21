@@ -1,4 +1,4 @@
-package com.setl.meetingdey;
+package com.meetingdey.app;
 
 import com.getcapacitor.BridgeActivity;
 

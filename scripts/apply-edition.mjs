@@ -37,7 +37,7 @@ const xmlEsc = v => v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g,
 console.log(`Applying edition "${ed.edition}" → ${ed.appId} (${ed.appName})`);
 
 // Android ----------------------------------------------------------------
-// namespace stays com.setl.meetingdey (Java package); only applicationId changes.
+// namespace stays com.meetingdey.app (Java package); only applicationId changes.
 patch('android/app/build.gradle', [
   [/applicationId "[^"]+"/, `applicationId "${ed.appId}"`, 'applicationId'],
 ]);

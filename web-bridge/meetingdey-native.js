@@ -15,6 +15,7 @@
  *   MeetingDeyNative.appLock.verify(reason)                    → Promise<boolean>
  *
  * Events dispatched on window:
+ *   'meetingdey:back'      cancelable; Android back button (preventDefault() = handled)
  *   'meetingdey:deeplink'  detail: { url, path, query }   e.g. after MoMo approval
  *   'meetingdey:network'   detail: { connected, type }
  *   'meetingdey:push'      detail: { notification, tapped }
@@ -58,6 +59,10 @@
   // Android back button: go back in history, or leave the app from the first page.
   if (P.App) {
     P.App.addListener('backButton', function (ev) {
+      // The page gets first say: anything that calls preventDefault() on
+      // 'meetingdey:back' (closing a dialog, the menu, going Home) consumes it.
+      var be = new CustomEvent('meetingdey:back', { cancelable: true, detail: { canGoBack: ev.canGoBack } });
+      if (!window.dispatchEvent(be)) return;
       if (document.querySelector('.modal.show, [role="dialog"][open]')) {
         // Let the page close its own dialog (most modals already listen for Escape).
         document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));

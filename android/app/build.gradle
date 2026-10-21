@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "com.setl.meetingdey"
+    namespace = "com.meetingdey.app"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.setl.meetingdey"
+        applicationId "com.meetingdey.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         // CI passes VERSION_CODE (build number) and VERSION_NAME (from package.json).
