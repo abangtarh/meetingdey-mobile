@@ -8,7 +8,7 @@ Copy-paste material for Google Play Console and App Store Connect. No passwords 
 |---|---|
 | Privacy policy URL | https://app.meetingdey.com/privacy |
 | Account deletion URL (Google Play, required) | https://app.meetingdey.com/close-account |
-| Support URL (Apple) | https://app.meetingdey.com/support |
+| Support URL (Apple) | a page that shows your support e-mail or phone (use https://meetingdey.com if it has one; I could not confirm that app.meetingdey.com/support is public) |
 | Marketing URL (optional) | https://meetingdey.com |
 | Support e-mail | set in the console, Policies tab (Contact e-mail) and use the same address here |
 
