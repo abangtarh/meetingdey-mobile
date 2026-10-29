@@ -72,8 +72,8 @@ if (!skipAssets) {
     execFileSync('npx', [
       'capacitor-assets', 'generate', '--android', '--ios',
       '--assetPath', assetDir,
-      '--iconBackgroundColor', ed.colors.splashBackground,
-      '--iconBackgroundColorDark', ed.colors.splashBackground,
+      '--iconBackgroundColor', ed.colors.iconBackground || ed.colors.splashBackground,
+      '--iconBackgroundColorDark', ed.colors.iconBackground || ed.colors.splashBackground,
       '--splashBackgroundColor', ed.colors.splashBackground,
       '--splashBackgroundColorDark', ed.colors.splashBackground,
     ], { cwd: root, stdio: 'inherit', env: { ...process.env, EDITION: ed.edition } });
