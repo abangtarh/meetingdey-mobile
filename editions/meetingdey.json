@@ -11,6 +11,7 @@
   "colors": {
     "primary": "#003366",
     "accent": "#C9A84C",
+    "iconBackground": "#003366",
     "splashBackground": "#0a1f3c",
     "statusBar": "#0a1f3c"
   },
